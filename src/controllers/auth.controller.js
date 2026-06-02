@@ -31,7 +31,7 @@ const registerUser = async (req, res) => {
       password,
     });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY);
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY);
     res.cookie("token", token, { httpOnly: true });
 
     return res.status(201).json({
@@ -46,4 +46,41 @@ const registerUser = async (req, res) => {
   }
 };
 
-export { registerUser };
+const loginUser = async (req, res) => {
+  try {
+    const { email, username, password } = req.body;
+
+    if ((!email && !username) || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide your required credential",
+      });
+    }
+
+    const user = await User.findOne({
+      $or: [{ email }, { username }],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY);
+    res.cookie("token", token, { httpOnly: true });
+
+    return res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error logging in user",
+    });
+  }
+};
+
+export { registerUser, loginUser };
