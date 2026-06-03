@@ -22,6 +22,17 @@ const taskSchema = new mongoose.Schema(
     hastags: {
       type: [String],
     },
+
+    dueDate: {
+      type: Date,
+      required: true,
+      validate: {
+        validator: (value) => {
+          return value >= new Date();
+        },
+        message: "Due date cannot be in the past",
+      },
+    },
   },
   { timestamps: true },
 );
