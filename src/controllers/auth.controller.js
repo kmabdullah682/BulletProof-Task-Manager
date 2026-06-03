@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import User from "../models/user.models.js";
 import jwt from "jsonwebtoken";
-import cookie from "cookie-parser";
+import bcrypt from "bcrypt";
 
 const registerUser = async (req, res) => {
   try {
@@ -25,13 +25,18 @@ const registerUser = async (req, res) => {
       });
     }
 
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.create({
       username,
       email,
-      password,
+      password: encryptedPassword,
     });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY);
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1d",
+    });
+
     res.cookie("token", token, { httpOnly: true });
 
     return res.status(201).json({
@@ -65,6 +70,15 @@ const loginUser = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
+      });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    if (!validPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid password",
       });
     }
 

@@ -19,7 +19,7 @@ const taskSchema = new mongoose.Schema(
       required: true,
     },
 
-    hastags: {
+    hashtags: {
       type: [String],
     },
 
@@ -32,6 +32,12 @@ const taskSchema = new mongoose.Schema(
         },
         message: "Due date cannot be in the past",
       },
+    },
+
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   { timestamps: true },
