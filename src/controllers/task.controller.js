@@ -67,4 +67,40 @@ const getTasks = async (req, res) => {
   }
 };
 
-export { createTask, getTasks };
+const updateTask = async (req, res) => {
+  try {
+    const updates = req.body;
+    const taskId = req.params.id;
+
+    if (!updates) {
+      return res.status(400).json({
+        success: false,
+        message: "please replace the fields with the updated one",
+      });
+    }
+
+    const updatedTask = await Task.findByIdAndUpdate(taskId, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedTask) {
+      return res.status(404).json({
+        success: false,
+        message: "there is no task to update please find another one",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "task edited successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "internal server error please try again",
+    });
+  }
+};
+
+export { createTask, getTasks, updateTask };
