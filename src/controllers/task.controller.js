@@ -34,4 +34,37 @@ const createTask = async (req, res) => {
   }
 };
 
-export { createTask };
+const getTasks = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const status = req.query.status;
+
+    const userId = req.id;
+
+    const tasks = await Task.find({ user: userId, status: status })
+      .skip(skip)
+      .limit(limit);
+
+    if (tasks.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No tasks found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Tasks retrieved successfully",
+      tasks,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve tasks, internal server error",
+    });
+  }
+};
+
+export { createTask, getTasks };
