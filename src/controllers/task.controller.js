@@ -2,7 +2,7 @@ import Task from "../models/task.models.js";
 
 const createTask = async (req, res) => {
   try {
-    const { title, description, status, hastags, dueDate } = req.body;
+    const { title, description, status, hashtags, dueDate } = req.body;
 
     if (!title || !description || !dueDate || !status) {
       return res.status(400).json({
@@ -17,7 +17,7 @@ const createTask = async (req, res) => {
       title,
       description,
       status,
-      hastags,
+      hashtags,
       dueDate,
       user: userId,
     });
