@@ -103,4 +103,29 @@ const updateTask = async (req, res) => {
   }
 };
 
-export { createTask, getTasks, updateTask };
+const deleteTask = async (req, res) => {
+  try {
+    const taskId = req.params.id;
+
+    const deleteTask = await Task.findByIdAndDelete(taskId);
+
+    if (!deleteTask) {
+      return res.status(404).json({
+        success: false,
+        message: "there is not this task to delete find another one to delete",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "task deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "internal server error please try again",
+    });
+  }
+};
+
+export { createTask, getTasks, updateTask, deleteTask };
